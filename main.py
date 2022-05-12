@@ -10,11 +10,9 @@ from email.mime.application import MIMEApplication
 from openpyxl import load_workbook
 from watchdog.observers import Observer
 import time
-# from watchdog.events import LoggingEventHandler
 from watchdog.events import FileSystemEventHandler
 def send(filepath):
     wb = load_workbook('база_рассылки.xlsx')
-    """ЗАполнение комбобокса организациями"""
     sheet_ranges = wb['база']
     column_a = sheet_ranges['A']
     email = []
@@ -27,18 +25,14 @@ def send(filepath):
     print(email)
     input()
     for mail in email:
-        server = 'smtp.mail.ru'
-        user = 'dor.freza@mail.ru'
-        password = 'be5vZsKMnW1IvLagx4ro'
+        server = 'smtp.*********.ru'
+        user = '*********'
+        password = '*********'
         print(mail)
         recipients = mail
-        sender = 'dor.freza@mail.ru'
+        sender = '*********@email.ru'
         subject = 'Информационное письмо'
-        text = 'Оповещаем Вас, как нашего постоянного клиента, что из-за подорожания стоимости горюче-смазочных материалов, запасных частей и услуг по техническому обслуживанию техники, мы были вынуждены увеличить стоимость наших транспортных услуг с 01.08.2021 года.<br>' \
-               '- Доставка дорожной фрезы WIRTGEN2000, WIRTGEN200, CATERPILLAR PM60 в черте города до объекта работ и обратно составит <b>36 000</b> (тридцать шесть тысяч) рублей, в том числе НДС (20%).<br>' \
-               '- Доставка дорожной фрезы WIRTGEN1000F, WIRTGEN100F в черте города до объекта работ и обратно составит <b>30 000</b> (тридцать тысяч) рублей, в том числе НДС (20%).<br>' \
-               '- Дежурство тягача с тралом (ожидание окончания работ на  одном объекте работ и перевозка на следующий объект)  составит <b>30 000</b> (тридцать тысяч) рублей, в том числе НДС (20%).<br>' \
-               '<br>Просим отнестись к этой вынужденной мере с пониманием.'
+        text = '*********'
         html = '<html><head></head><body><p>' + text + '</p></body></html>'
         msg = MIMEMultipart()
 
@@ -48,29 +42,13 @@ def send(filepath):
         #password = "your_password"
         msg['From'] = sender
         msg['To'] = mail
-        msg['Subject'] = "Информационное письмо от ГлавАвтоснаб"
-        # basename = os.path.basename(filepath)
-        # filesize = os.path.getsize(filepath)
-        # part_file = MIMEBase('application', 'octet-stream; name="{}"'.format(basename))
-        # part_file.set_payload(open(filepath, "rb").read())
-        # part_file.add_header('Content-Description', basename)
-        # part_file.add_header('Content-Disposition', 'attachment; filename="{}"; size={}'.format(basename, filesize))
-        # encoders.encode_base64(part_file)
-        #add in the message body
-        #msg.attach(MIMEText(message, 'plain'))
-        #part_text = MIMEText(text, 'plain')
+        msg['Subject'] = "Информационное письмо от *********"
         part_html = MIMEText(html, 'html')
-        #
-        #msg.attach(part_text)
         msg.attach(part_html)
         with open(filepath, "rb") as f:
-         #attach = email.mime.application.MIMEApplication(f.read(),_subtype="pdf")
             attach = MIMEApplication(f.read())
             attach.add_header('Content-Disposition', 'attachment', filename=str(filepath))
         msg.attach(attach)
-        #msg.attach(part_file)
-        # # msg.attach(part_file)
-        # # create server
         server = smtplib.SMTP('smtp.mail.ru: 587')
 
         server.starttls()
@@ -83,35 +61,6 @@ def send(filepath):
 
         server.quit()
         print("successfully sent email to %s:" % (msg['To']))
-        # filepath = "fish.png"
-        # basename = os.path.basename(filepath)
-        # filesize = os.path.getsize(filepath)
-        #
-        # msg = MIMEMultipart('alternative')
-        # msg['Subject'] = subject
-        # msg['From'] = 'ГлавАвтоснаб <' + sender + '>'
-        # msg['To'] = ', '.join(recipients)
-        # msg['Reply-To'] = sender
-        # msg['Return-Path'] = sender
-        # msg['X-Mailer'] = 'Python/' + (python_version())
-        #
-        # part_text = MIMEText(text, 'plain')
-        # part_html = MIMEText(html, 'html')
-        # part_file = MIMEBase('application', 'octet-stream; name="{}"'.format(basename))
-        # part_file.set_payload(open(filepath, "rb").read())
-        # part_file.add_header('Content-Description', basename)
-        # part_file.add_header('Content-Disposition', 'attachment; filename="{}"; size={}'.format(basename, filesize))
-        # encoders.encode_base64(part_file)
-        #
-        # msg.attach(part_text)
-        # msg.attach(part_html)
-        # msg.attach(part_file)
-        #
-        # mail = smtplib.SMTP_SSL(server)
-        # mail.login(user, password)
-        # mail.sendmail(sender, recipients, msg.as_string())
-        # mail.quit()
-        # print('Сообщения на e-mail',recipients, ' отправлено!')
 
 def get_file(filepath):
     filepath = filepath
@@ -123,9 +72,6 @@ class EventHandler(FileSystemEventHandler):
     # вызывается на событие создания файла или директории
     def on_created(self, event):
         print(event.event_type, event.src_path)
-        #f = open(event.src_path, "w")
-        #f.write('ХУЙ')
-        #f.close()
         get_file(event.src_path)
 
     # вызывается на событие модификации файла или директории
@@ -142,10 +88,6 @@ class EventHandler(FileSystemEventHandler):
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.INFO,
-    #                    format='%(asctime)s - %(message)s',
-    #                    datefmt='%Y-%m-%d %H:%M:%S')
-
     path = r"C:\test"  # отслеживаемая директория с нужным файлом
     event_handler = EventHandler()
     observer = Observer()
